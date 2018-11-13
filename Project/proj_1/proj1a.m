@@ -68,10 +68,10 @@ funs = student_sols();
 % project report.
 
 N = 272;         % Number of OFDM (QPSK) symbols to transmit.   
-N_cp = 0;        % Length of cyclic prefix
+N_cp = 120-1;     % Length of cyclic prefix                     ???????????? IS THIS THE RIGHT VALUE????
 snr = inf;       % Receiver side SNR [dB]
 sync_err = 0;    % Negative values imply early frame sync
-channel_known = true;   %Set true to use the known channel, false to use the unknown channel
+channel_known = true;   % Set true to use the known channel, false to use the unknown channel
 
 % Text to send, must correspond to at least N OFDM symbols
 tx_str = ['Alice: Would you tell me, please, which way I ought to go from here? ' ...
@@ -97,15 +97,15 @@ pilot = string2bits(pilot_str);
 
 % Define a baseband channel
 
-h = zeros(60,1); h(1) = 1;   % Ideal
-%h = zeros(60,1); h(1) = 0.5; % Ideal, scaled magnitude
-%h = zeros(60,1); h(1) = exp(1j*1/2);    % Ideal, phase shift by 1/2 radian (~28 degrees)
-%h = 0.8.^(0:59)';            % LP model
-%h = zeros(60,1); h(1) = 0.5; h(9) = 0.5; % Multipath (2 paths)
-%h = randn(60,1);             % Random Gaussian 
+% h = zeros(60,1); h(1) = 1;   % Ideal
+% h = zeros(60,1); h(1) = 0.5; % Ideal, scaled magnitude
+% h = zeros(60,1); h(1) = exp(1j*1/2);    % Ideal, phase shift by 1/2 radian (~28 degrees)
+% h = 0.8.^(0:59)';            % LP model
+% h = zeros(60,1); h(1) = 0.5; h(9) = 0.5; % Multipath (2 paths)
+h = randn(60,1);             % Random Gaussian 
 
 % Plot the channel response
-figure(1);
+figure;
 subplot(2,1,1);
 title('Channel response');
 plot(abs(fft(h, N)));
@@ -143,11 +143,11 @@ else
     % Draw a constellation plot of the recieved symbols, pre- and post-equalization
     % Recieved symbols are drawn in varying sizes so symbols in repeated
     % locations will be visible
-    figure(2);
+    figure;
     plot_constallation(symbs.tx, symbs.rx_pe);
     title('Pre-equalization symbol constellation');
 
-    figure(3);
+    figure;
     plot_constallation(symbs.tx, symbs.rx_e);
     title('Post-equalization symbol constellation');
 end

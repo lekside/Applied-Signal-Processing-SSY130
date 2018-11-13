@@ -146,38 +146,107 @@ student_id = 19930425;
         h = h(:);
         
         % Convert bits to QPSK symbols
-        x = 0; %TODO: This line is missing some code!
+        % x = 0; %TODO: This line is missing some code!
+        x = bits2qpsk(tx);
         
         symbs.tx = x;   % Store transmitted symbols for later
         
         % Number of symbols in message
         N = length(x);
 
-        % Create OFDM time-domain block using IDFT
-        z = 0; %TODO: This line is missing some code!
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,1-1/N,N) ,abs(x), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('module[ s(k) ]')
+        xlabel('w / w_s')
+        subplot(2,1,2)
+        plot( linspace(0,1-1/N,N) ,angle(x)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('angle[ s(k) ] [º]')
+        xlabel('w / w_s')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        % Create OFDM time-domain block using IDFT 
+        %    -get the same result as z = ifft(x); plot(real(z));
+        z = zeros(N,1);
+        for n=1:N
+            z(n) = 0;
+            for ik=1:N
+                z(n) = z(n) + 1/N * x(ik)*exp(1i*2*pi*(ik-1)*(n-1)/N) ;
+            end
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        plot(real(z))
+        subplot(2,1,1)
+        plot( linspace(0,N,N) ,real(z), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('real[ z(n) ]')
+        xlabel('N / f_s [s]')
+        subplot(2,1,2)
+        plot( linspace(0,N,N) ,imag(z), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('im[ z(k) ]')
+        xlabel('N / f_s [s]')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
         % Add cyclic prefix to create OFDM package
-        zcp = 0; %TODO: This line is missing some code!
-
+        zcp = add_cyclic_prefix(z,N_cp); %TODO: This line is missing some code!
+        
         % Send package over channel
         ycp = simulate_baseband_channel(zcp, h, snr, sync_err);
         % Only keep the first N+Ncp recieved samples. Consider why ycp is longer
         % than zcp, and why we only need to save the first N+Ncp samples. This is
         % important to understand.
-        ycp = ycp(1:N+N_cp); 
+        % ANSWER: because the last Ncp-1 will be the same as the first Ncp
+        %         samples. This is because we are convoluting periodic
+        %         signals
+        ycp = ycp(1:N+N_cp);
 
         % Remove cyclic prefix
-        y = 0; %TODO: This line is missing some code!
+        y = remove_cyclic_prefix(ycp,N_cp);
 
         % Convert to frequency domain using DFT
-        r = 0; %TODO: This line is missing some code!
+        %       - same result as fft()
+        r = zeros(N,1);
+        for ik=1:N
+            r(ik) = 0;
+            for n=1:N
+                r(ik) = r(ik) + y(n)*exp(-1i*2*pi*(ik-1)*(n-1)/N) ;
+            end
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,1-1/N,N) ,abs(r), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('module[ r(k) ]')
+        xlabel('w / w_s')
+%         ylim([0,max()])
+        subplot(2,1,2)
+        plot( linspace(0,1-1/N,N) ,angle(r)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('angle[ r(k) ] [º]')
+        xlabel('w / w_s')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         symbs.rx_pe = r; % Store symbols for later
 
         % Remove effect of channel by equalization. Here, we can do this by
         % dividing r (which is in the frequency domain) by the channel gain (also
         % in the frequency domain).
-        r_eq = 0; %TODO: This line is missing some code!
+        r_eq = r./fft(h, N); %TODO: This line is missing some code!
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,1-1/N,N) ,abs(r_eq), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('module[ hat s(k) ]')
+        xlabel('w / w_s')
+        ylim([0,2])
+        subplot(2,1,2)
+        plot( linspace(0,1-1/N,N) ,angle(r_eq)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('angle[ hat s(k) ] [º]')
+        xlabel('w / w_s')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         symbs.rx_e = r_eq; %Store symbols for later
 
@@ -186,7 +255,7 @@ student_id = 19930425;
         evm = norm(x - r_eq)/sqrt(N);
 
         % Convert the recieved symsbols to bits
-        rx = 0; %TODO: This line is missing some code!
+        rx = qpsk2bits(r_eq); %TODO: This line is missing some code!
 
         % Calculate the bit error rate (BER).
         % This indicates the relative number of bit errors.
