@@ -23,17 +23,13 @@ student_id = 19930425;
 	function z = add_cyclic_prefix(x,Ncp)  %#ok<*INUSD>
 		% Adds (prepends) a Ncp long cyclic prefix to the ofdm block x.
 		x = x(:);   %#ok<*NASGU> % Ensure x is a column vector        
-        %%%%% Lucas - TODO: This line is missing some code!
-        z = [x(end-(Ncp-1):end);x(:)];
-        %%%%%% Lucas - TODO: This line is missing some code!
+        z = [x(end-(Ncp-1):end); x(:)];
     end
 
     function x = remove_cyclic_prefix(z,Ncp)
         % Removes a Ncp long cyclic prefix from the ofdm package z
         z = z(:);   % Ensure z is a column vector
-        %%%%% Lucas - TODO: This line is missing some code!
         x = z(Ncp+1:end);
-        %%%%%% Lucas - TODO: This line is missing some code!
     end
 
     function symb = bits2qpsk(bits)
@@ -60,7 +56,6 @@ student_id = 19930425;
             error('bits must be of even length');
         end
     
-        %%%%% Lucas - TODO: This line is missing some code!
         % s(1) = ... ( b(1)    + i*b(2) )
         % s(2) = ... ( b(3)    + i*b(4) )
         % s(3) = ... ( b(5)    + i*b(6) )
@@ -69,7 +64,6 @@ student_id = 19930425;
         for k=1: numel(symb)
             symb(k) = 1/sqrt(2)* ( bits(2*k - 1) + 1i * bits(2*k) );
         end
-        %%%%%% Lucas - TODO: This line is missing some code!
     end
 
     function bits  = qpsk2bits(x)
@@ -84,12 +78,10 @@ student_id = 19930425;
         % first bit corresponds to the real part of the symbol while the
         % second bit corresponds to the imaginary part of the symbol.
         
-        %%%%% Lucas - TODO: This line is missing some code!        
         for k=1:length(x)
             bits(2*k-1) = real(x(k)) > 0;
             bits(2*k)   = imag(x(k)) > 0;
         end
-        %%%%% Lucas - TODO: This line is missing some code!
         
         % Ensure output is of correct type
         % zero value -> logical zero
@@ -167,14 +159,7 @@ student_id = 19930425;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % Create OFDM time-domain block using IDFT 
-        %    -get the same result as z = ifft(x); plot(real(z));
-        z = zeros(N,1);
-        for n=1:N
-            z(n) = 0;
-            for ik=1:N
-                z(n) = z(n) + 1/N * x(ik)*exp(1i*2*pi*(ik-1)*(n-1)/N) ;
-            end
-        end
+        z = ifft(x);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
@@ -207,21 +192,14 @@ student_id = 19930425;
         y = remove_cyclic_prefix(ycp,N_cp);
 
         % Convert to frequency domain using DFT
-        %       - same result as fft()
-        r = zeros(N,1);
-        for ik=1:N
-            r(ik) = 0;
-            for n=1:N
-                r(ik) = r(ik) + y(n)*exp(-1i*2*pi*(ik-1)*(n-1)/N) ;
-            end
-        end
+        r = fft(y);
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
         subplot(2,1,1)
         plot( linspace(0,1-1/N,N) ,abs(r), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
         ylabel('module[ r(k) ]')
         xlabel('w / w_s')
-%         ylim([0,max()])
         subplot(2,1,2)
         plot( linspace(0,1-1/N,N) ,angle(r)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
         ylabel('angle[ r(k) ] [º]')
@@ -233,7 +211,8 @@ student_id = 19930425;
         % Remove effect of channel by equalization. Here, we can do this by
         % dividing r (which is in the frequency domain) by the channel gain (also
         % in the frequency domain).
-        r_eq = r./fft(h, N); %TODO: This line is missing some code!
+        H = fft(h, N);
+        r_eq = conj(H).*r./abs(H).^2; %TODO: This line is missing some code!
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
@@ -272,7 +251,7 @@ student_id = 19930425;
         if(length(txData) ~= length(txPilot))
             error('Pilot and data are not of the same length!');
         end
-        txFrame = 0; %TODO: This line is missing some code!
+        txFrame = [txPilot; txData]; %TODO: This line is missing some code!
     end
 
     function [rxPilot, rxData] = split_frame(rxFrame)
@@ -282,8 +261,8 @@ student_id = 19930425;
             error('Vector z must have an even number of elements'); 
         end
         N = length(rxFrame);
-        rxPilot = 0; %TODO: This line is missing some code!
-        rxData = 0; %TODO: This line is missing some code!
+        rxPilot = rxFrame(1:N/2); %TODO: This line is missing some code!
+        rxData = rxFrame(N/2+1:end); %TODO: This line is missing some code!
     end
 
     function [rx, evm, ber, symbs] = sim_ofdm_unknown_channel(tx, h, N_cp, snr, sync_err)
@@ -342,8 +321,8 @@ student_id = 19930425;
         h = h(:);
         
         % Convert bits to QPSK symbols
-        x.p = 0; %TODO: This line is missing some code!
-        x.d = 0; %TODO: This line is missing some code!
+        x.p = bits2qpsk(tx.p); %TODO: This line is missing some code!
+        x.d = bits2qpsk(tx.d); %TODO: This line is missing some code!
 
         symbs.tx = x.d;   % Store transmitted data symbols for later
 
@@ -354,15 +333,15 @@ student_id = 19930425;
         end
 
         % Create OFDM time-domain block using IDFT
-        z.p = 0; %TODO: This line is missing some code!
-        z.d = 0; %TODO: This line is missing some code!
+        z.p = ifft(x.p); %TODO: This line is missing some code!
+        z.d = ifft(x.d); %TODO: This line is missing some code!
 
         % Add cyclic prefix to create OFDM package
-        zcp.p = 0; %TODO: This line is missing some code!
-        zcp.d = 0; %TODO: This line is missing some code!
+        zcp.p = add_cyclic_prefix(z.p,N_cp); %TODO: This line is missing some code!
+        zcp.d = add_cyclic_prefix(z.d,N_cp); %TODO: This line is missing some code!
         
         % Concatenate the messages
-        tx_frame = 0; %TODO: This line is missing some code!
+        tx_frame = concat_packages(zcp.p,zcp.d); %TODO: This line is missing some code!
 
         % Send package over channel
         rx_frame = simulate_baseband_channel(tx_frame, h, snr, sync_err);
@@ -371,22 +350,22 @@ student_id = 19930425;
         
         % Split frame into packages
         ycp = struct();
-        [ycp.p, ycp.d] = 0; %TODO: This line is missing some code!
+        [ycp.p, ycp.d] = split_frame(rx_frame); %TODO: This line is missing some code!
         
         % Remove cyclic prefix
-        y.p = 0; %TODO: This line is missing some code!
-        y.d = 0; %TODO: This line is missing some code!
+        y.p = remove_cyclic_prefix(ycp.p,N_cp); %TODO: This line is missing some code!
+        y.d = remove_cyclic_prefix(ycp.d,N_cp); %TODO: This line is missing some code!
 
         % Convert to frequency domain using DFT
-        r.p = 0; %TODO: This line is missing some code!
-        r.d = 0; %TODO: This line is missing some code!
+        r.p = fft(y.p); %TODO: This line is missing some code!
+        r.d = fft(y.d); %TODO: This line is missing some code!
         symbs.rx_pe = r.d; % Store symbols for later
         
         % Esimate channel
-        H = 0; %TODO: This line is missing some code!
+        H = r.p./x.p; %TODO: This line is missing some code!
 
         % Remove effect of channel on the data package by equalization.
-        r_eq = 0; %TODO: This line is missing some code!
+        r_eq = conj(H).*r.d./abs(H).^2; %TODO: This line is missing some code!
 
         symbs.rx_e = r_eq; %Store symbols for later
 
@@ -395,7 +374,7 @@ student_id = 19930425;
         evm = norm(x.d - r_eq)/sqrt(N);
 
         % Convert the recieved symsbols to bits
-        rx = 0; %TODO: This line is missing some code!
+        rx = qpsk2bits(r_eq); %TODO: This line is missing some code!
 
         % Calculate the bit error rate (BER).
         % This indicates the relative number of bit errors.
@@ -666,3 +645,23 @@ funs.sim_ofdm_audio_channel = @sim_ofdm_audio_channel;
 
 end
 
+
+
+% IDFT
+%         z = zeros(N,1);
+%         for n=1:N
+%             z(n) = 0;
+%             for ik=1:N
+%                 z(n) = z(n) + 1/N * x(ik)*exp(1i*2*pi*(ik-1)*(n-1)/N) ;
+%             end
+%         end
+
+%
+% FFT
+%         r = zeros(N,1);
+%         for ik=1:N
+%             r(ik) = 0;
+%             for n=1:N
+%                 r(ik) = r(ik) + y(n)*exp(-1i*2*pi*(ik-1)*(n-1)/N) ;
+%             end
+%         end

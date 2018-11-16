@@ -1,3 +1,4 @@
+close all;
 %NO_PFILE
 % Sim OFDM_1A
 % Evaluate the performance of the OFDM communication scheme, part A.
@@ -67,9 +68,9 @@ funs = student_sols();
 % these parameters to evaluate the system behavior as described in the
 % project report.
 
-N = 272;         % Number of OFDM (QPSK) symbols to transmit.   
-N_cp = 120-1;     % Length of cyclic prefix                     ???????????? IS THIS THE RIGHT VALUE????
-snr = inf;       % Receiver side SNR [dB]
+N = 500;    % Number of OFDM (QPSK) symbols to transmit.   
+N_cp = 0;    % Length of cyclic prefix
+snr = Inf;       % Receiver side SNR [dB]
 sync_err = 0;    % Negative values imply early frame sync
 channel_known = true;   % Set true to use the known channel, false to use the unknown channel
 
@@ -100,9 +101,9 @@ pilot = string2bits(pilot_str);
 % h = zeros(60,1); h(1) = 1;   % Ideal
 % h = zeros(60,1); h(1) = 0.5; % Ideal, scaled magnitude
 % h = zeros(60,1); h(1) = exp(1j*1/2);    % Ideal, phase shift by 1/2 radian (~28 degrees)
-% h = 0.8.^(0:59)';            % LP model
-% h = zeros(60,1); h(1) = 0.5; h(9) = 0.5; % Multipath (2 paths)
-h = randn(60,1);             % Random Gaussian 
+h = 0.8.^(0:59)';            % LP model
+% h = zeros(60,1); h(1) = 0.5; h(9) = 0.4; % Multipath (2 paths)
+% h = randn(60,1);             % Random Gaussian 
 
 % Plot the channel response
 figure;
@@ -137,7 +138,7 @@ else
     % with an underscore
     rx_str = clean_str(bits2string(rx));
 
-    fprintf('Transmitted: ''%s''\nRecieved:    ''%s''\n', tx_str, rx_str);
+    fprintf('Transmitted: ''%s''\nReceived:    ''%s''\n', tx_str, rx_str);
     fprintf('EVM: %5.g, BER: %5.g\n', evm, ber);
 
     % Draw a constellation plot of the recieved symbols, pre- and post-equalization
