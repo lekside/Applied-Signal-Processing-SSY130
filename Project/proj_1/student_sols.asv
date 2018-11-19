@@ -255,7 +255,8 @@ student_id = 19930425;
         % receieved bits are different, which is the number we'd expect if we
         % compare two random bit sequences).
         ber = 1-sum(rx == tx)/length(rx);
-              
+        
+        
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])

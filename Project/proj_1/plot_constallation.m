@@ -8,7 +8,7 @@ c = linspace(0, length(rx), length(rx));
 sz = linspace(10, 60, length(rx));
 scatter(real(rx), imag(rx), sz, c);
 h_c = colorbar();
-title(h_c, 'symbol index');
+% title(h_c, 'symbol index');
 hold on;
 scatter(real(tx), imag(tx), 15, 'filled', 'red');
 xlabel('Re\{s\}');
