@@ -178,15 +178,56 @@ student_id = 19930425;
         % Add cyclic prefix to create OFDM package
         zcp = add_cyclic_prefix(z,N_cp); %TODO: This line is missing some code!
         
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,N,N) ,real(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('real[ zcp(n) ]')
+        xlabel('N / f_s [s]')
+        subplot(2,1,2)
+        plot( linspace(0,N,N) ,imag(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('im[ zcp(k) ]')
+        xlabel('N / f_s [s]')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
         % Send package over channel
         ycp = simulate_baseband_channel(zcp, h, snr, sync_err);
-        % Only keep the first N+Ncp recieved samples. Consider why ycp is longer
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        Nrx = length(ycp);
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,Nrx,Nrx) ,real(ycp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('real[ ycp(n) ]')
+        xlabel('N / f_s [s]')
+        subplot(2,1,2)
+        plot( linspace(0,Nrx,Nrx) ,imag(ycp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('im[ ycp(k) ]')
+        xlabel('N / f_s [s]')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
+        % Only keep the first N+Ncp received samples. Consider why ycp is longer
         % than zcp, and why we only need to save the first N+Ncp samples. This is
         % important to understand.
-        % ANSWER: because the last Ncp-1 will be the same as the first Ncp
-        %         samples. This is because we are convoluting periodic
-        %         signals
+        % ANSWER: Since we are treating the signal as periodic, we can
+        %         remove the initial and final Ncp values.
         ycp = ycp(1:N+N_cp);
+        
+%         figure
+%         hold on;
+%         plot(1 : N_cp , ycp(1:N_cp));
+%         plot(N_cp+1 : N_cp+N+1, ycp(N_cp+1 : N_cp+N+1))
+%         plot(N+N_cp+1 : N+2*N_cp-1, ycp(N+N_cp+1 : N+2*N_cp-1), 'k') 
+%         
+%         plot(1:size(ycp,1),ycp); 
+%         yyaxis right
+%         plot(1:size(zcp,1),zcp)
+%         [ycp(1:N_cp) ycp(end-N_cp+1:end)]
+%         ycp = ycp(N_cp:end);
+                
 
         % Remove cyclic prefix
         y = remove_cyclic_prefix(ycp,N_cp);
@@ -369,9 +410,36 @@ student_id = 19930425;
         
         % Concatenate the messages
         tx_frame = concat_packages(zcp.p,zcp.d); %TODO: This line is missing some code!
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,2*N,2*N) ,real(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('real[ z(n) ]')
+        xlabel('N / f_s [s]')
+        subplot(2,1,2)
+        plot( linspace(0,2*N,2*N) ,imag(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('im[ z(k) ]')
+        xlabel('N / f_s [s]')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         % Send package over channel
         rx_frame = simulate_baseband_channel(tx_frame, h, snr, sync_err);
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        Nrx = length(rx_frame);
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,Nrx,Nrx) ,real(rx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('real[ y(n) ]')
+        xlabel('N / f_s [s]')
+        subplot(2,1,2)
+        plot( linspace(0,Nrx,Nrx) ,imag(rx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('im[ y(k) ]')
+        xlabel('N / f_s [s]')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         % As before, only keep the first samples
         rx_frame = rx_frame(1:2*(N+N_cp));
         
@@ -390,6 +458,17 @@ student_id = 19930425;
         
         % Esimate channel
         H = r.p./x.p; %TODO: This line is missing some code!
+        
+        figure('Color','white');
+        subplot(2,1,1);
+        plot(abs(H));
+        xlabel('k');
+        ylabel('|H(k)|');
+        title('Estimated Channel response');
+        subplot(2,1,2);
+        plot(angle(H));
+        xlabel('k');
+        ylabel('arg(H(k))');
 
         % Remove effect of channel on the data package by equalization.
         r_eq = conj(H).*r.d./abs(H).^2; %TODO: This line is missing some code!

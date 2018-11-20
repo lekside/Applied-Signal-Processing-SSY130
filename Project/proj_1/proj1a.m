@@ -69,11 +69,11 @@ funs = student_sols();
 % these parameters to evaluate the system behavior as described in the
 % project report.
 
-N = 228;           % Number of OFDM (QPSK) symbols to transmit.   
+N = 272;         % Number of OFDM (QPSK) symbols to transmit.   
 N_cp = 0;        % Length of cyclic prefix
-snr = Inf;       % Receiver side SNR [dB]
-sync_err = 20;    % Negative values imply early frame sync
-channel_known = true;   % Set true to use the known channel, false to use the unknown channel
+snr = 20;       % Receiver side SNR [dB]
+sync_err = 0;    % Negative values imply early frame sync
+channel_known = false;   %Set true to use the known channel, false to use the unknown channel
 
 % Text to send, must correspond to at least N OFDM symbols
 tx_str = ['Alice: Would you tell me, please, which way I ought to go from here? ' ...
@@ -99,20 +99,21 @@ pilot = string2bits(pilot_str);
 
 % Define a baseband channel
 
-h = zeros(60,1); h(1) = 1;   % Ideal
+% h = zeros(60,1); h(1) = 1;   % Ideal
 % h = zeros(60,1); h(1) = 0.5; % Ideal, scaled magnitude
 % h = zeros(60,1); h(1) = exp(1j*1/2);    % Ideal, phase shift by 1/2 radian (~28 degrees)
-% h = 0.8.^(0:59)';            % LP model
-% h = zeros(60,1); h(1) = 0.5; h(9) = 0.4; % Multipath (2 paths)
+h = 0.8.^(0:59)';            % LP model
+% h = 0.99.^(0:59)';            % LP model
+% h = zeros(60,1); h(1) = 0.5; h(9) = 0.5; % Multipath (2 paths)
 % h = randn(60,1);             % Random Gaussian 
 
 % Plot the channel response
 figure;
 subplot(2,1,1);
-title('Channel response');
 plot(abs(fft(h, N)));
 xlabel('k');
 ylabel('|H(k)|');
+title('Real Channel response');
 subplot(2,1,2);
 plot(angle(fft(h, N)));
 xlabel('k');
@@ -145,17 +146,16 @@ else
     % Draw a constellation plot of the recieved symbols, pre- and post-equalization
     % Recieved symbols are drawn in varying sizes so symbols in repeated
     % locations will be visible
-%     close all;
     
     figure('Color','white','Position',[381.8000e+000   203.4000e+000   269.6000e+000   255.2000e+000]);
     plot_constallation(symbs.tx, symbs.rx_pe);
     title('Pre-equalization symbol constellation');    
-%     set(gca,'LooseInset',get(gca,'TightInset'))
-%     saveas(gcf, fullfile(pwd,'images/constellation-pre'),'epsc')
+    set(gca,'LooseInset',get(gca,'TightInset'))
+%     saveas(gcf, fullfile(pwd,'images/constellation-pre-snr5'),'epsc')
 
     figure('Color','white','Position',[381.8000e+000   203.4000e+000   269.6000e+000   255.2000e+000]);
     plot_constallation(symbs.tx, symbs.rx_e);
     title('Post-equalization symbol constellation');
-%     set(gca,'LooseInset',get(gca,'TightInset'))
-%     saveas(gcf, fullfile(pwd,'images/constellation-pos'),'epsc')
+    set(gca,'LooseInset',get(gca,'TightInset'))
+%     saveas(gcf, fullfile(pwd,'images/constellation-pos-snr5'),'epsc')
 end
