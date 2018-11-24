@@ -180,13 +180,14 @@ student_id = 19930425;
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        Nzp = length(zcp);
         figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
         subplot(2,1,1)
-        plot( linspace(0,N,N) ,real(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        plot( linspace(0,Nzp,Nzp) ,real(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
         ylabel('real[ zcp(n) ]')
         xlabel('N / f_s [s]')
         subplot(2,1,2)
-        plot( linspace(0,N,N) ,imag(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        plot( linspace(0,Nzp,Nzp) ,imag(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
         ylabel('im[ zcp(k) ]')
         xlabel('N / f_s [s]')
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -412,13 +413,14 @@ student_id = 19930425;
         tx_frame = concat_packages(zcp.p,zcp.d); %TODO: This line is missing some code!
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        Ntx = length(tx_frame);
         figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
         subplot(2,1,1)
-        plot( linspace(0,2*N,2*N) ,real(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        plot( linspace(0,Ntx,Ntx) ,real(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
         ylabel('real[ z(n) ]')
         xlabel('N / f_s [s]')
         subplot(2,1,2)
-        plot( linspace(0,2*N,2*N) ,imag(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        plot( linspace(0,Ntx,Ntx) ,imag(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
         ylabel('im[ z(k) ]')
         xlabel('N / f_s [s]')
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -459,19 +461,48 @@ student_id = 19930425;
         % Esimate channel
         H = r.p./x.p; %TODO: This line is missing some code!
         
-        figure('Color','white');
+        figure('Color','white', 'Position',[277.8000e+000   493.8000e+000   389.6000e+000   220.8000e+000]);
         subplot(2,1,1);
-        plot(abs(H));
+        plot(abs(H));  grid on;
         xlabel('k');
         ylabel('|H(k)|');
         title('Estimated Channel response');
         subplot(2,1,2);
-        plot(angle(H));
+        plot(angle(H)); grid on;
         xlabel('k');
         ylabel('arg(H(k))');
+        set(gca,'LooseInset',get(gca,'TightInset'))
+        saveas(gcf, fullfile(pwd,'images/H-pred-synch'),'epsc')
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,1-1/N,N) ,abs(r.d), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('module[ r_d(k) ]')
+        xlabel('w / w_s')
+        ylim([0,2])
+        subplot(2,1,2)
+        plot( linspace(0,1-1/N,N) ,angle(r.d)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('angle[ r_d(k) ] [º]')
+        xlabel('w / w_s')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         % Remove effect of channel on the data package by equalization.
         r_eq = conj(H).*r.d./abs(H).^2; %TODO: This line is missing some code!
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
+        subplot(2,1,1)
+        plot( linspace(0,1-1/N,N) ,abs(r_eq), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('module[ hat s(k) ]')
+        xlabel('w / w_s')
+        ylim([0,2])
+        subplot(2,1,2)
+        plot( linspace(0,1-1/N,N) ,angle(r_eq)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
+        ylabel('angle[ hat s(k) ] [º]')
+        xlabel('w / w_s')
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         symbs.rx_e = r_eq; %Store symbols for later
 
