@@ -8,7 +8,7 @@ lc = lines(8);
 
 ns = 16;
 ne = 32;
-ws = 39.7;
+ws = 25;
 
 % NOISE INPUT
 N = @(w) 0.1*(abs(w)>16).*(abs(w)<32);

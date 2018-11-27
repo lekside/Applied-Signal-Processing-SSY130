@@ -45,6 +45,8 @@
 % posed tasks =)
 
 % Do some cleanup
+if ~ exist(fullfile(pwd,'images'),'dir'), mkdir images; end
+close all;
 clc
 clear variables
 format short eng
@@ -118,19 +120,19 @@ else
     fprintf('EVM: %5.g, BER: %5.g\n', evm, ber);
 
     % Draw a constellation plot of the recieved symbols, post-equalization
-    figure(1);
+    figure;
     plot_constallation(symbs.tx, symbs.rx_e);
     title('Post-equalization symbol constellation');
 
     % Draw a plot of the channel's impulse response
     [~, ~, h] = simulate_audio_channel(0, f_s, inf, 0);
-    figure(2);
+    figure;
     stem(h);
     title('Channel impulse response');
     xlabel('Samples');
     ylabel('Impulse response');
 
-    figure(3);
+    figure;
     stem(h(1:ceil(length(h)/100)));
     title('Channel impulse response, first 1%');
     xlabel('Samples');

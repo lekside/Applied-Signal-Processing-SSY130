@@ -146,120 +146,39 @@ student_id = 19930425;
         % Number of symbols in message
         N = length(x);
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,1-1/N,N) ,abs(x), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('module[ s(k) ]')
-        xlabel('w / w_s')
-        subplot(2,1,2)
-        plot( linspace(0,1-1/N,N) ,angle(x)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('angle[ s(k) ] [º]')
-        xlabel('w / w_s')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_FT(x,'s',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Create OFDM time-domain block using IDFT 
         z = ifft(x);
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        plot(real(z))
-        subplot(2,1,1)
-        plot( linspace(0,N,N) ,real(z), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('real[ z(n) ]')
-        xlabel('N / f_s [s]')
-        subplot(2,1,2)
-        plot( linspace(0,N,N) ,imag(z), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('im[ z(k) ]')
-        xlabel('N / f_s [s]')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        plot_symbols(z,'z',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         % Add cyclic prefix to create OFDM package
         zcp = add_cyclic_prefix(z,N_cp); %TODO: This line is missing some code!
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        Nzp = length(zcp);
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,Nzp,Nzp) ,real(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('real[ zcp(n) ]')
-        xlabel('N / f_s [s]')
-        subplot(2,1,2)
-        plot( linspace(0,Nzp,Nzp) ,imag(zcp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('im[ zcp(k) ]')
-        xlabel('N / f_s [s]')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        plot_symbols(zcp,'zcp',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Send package over channel
         ycp = simulate_baseband_channel(zcp, h, snr, sync_err);
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        Nrx = length(ycp);
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,Nrx,Nrx) ,real(ycp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('real[ ycp(n) ]')
-        xlabel('N / f_s [s]')
-        subplot(2,1,2)
-        plot( linspace(0,Nrx,Nrx) ,imag(ycp), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('im[ ycp(k) ]')
-        xlabel('N / f_s [s]')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        plot_symbols(ycp,'ycp',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Only keep the first N+Ncp received samples. Consider why ycp is longer
         % than zcp, and why we only need to save the first N+Ncp samples. This is
         % important to understand.
         % ANSWER: Since we are treating the signal as periodic, we can
         %         remove the initial and final Ncp values.
-        ycp = ycp(1:N+N_cp);
-        
-%         figure
-%         hold on;
-%         plot(1 : N_cp , ycp(1:N_cp));
-%         plot(N_cp+1 : N_cp+N+1, ycp(N_cp+1 : N_cp+N+1))
-%         plot(N+N_cp+1 : N+2*N_cp-1, ycp(N+N_cp+1 : N+2*N_cp-1), 'k') 
-%         
-%         plot(1:size(ycp,1),ycp); 
-%         yyaxis right
-%         plot(1:size(zcp,1),zcp)
-%         [ycp(1:N_cp) ycp(end-N_cp+1:end)]
-%         ycp = ycp(N_cp:end);
-                
+        ycp = ycp(1:N+N_cp);            
 
         % Remove cyclic prefix
         y = remove_cyclic_prefix(ycp,N_cp);
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        plot(real(z))
-        subplot(2,1,1)
-        plot( linspace(0,N,N) ,real(y), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('real[ y(n) ]')
-        xlabel('N / f_s [s]')
-        subplot(2,1,2)
-        plot( linspace(0,N,N) ,imag(y), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('im[ y(k) ]')
-        xlabel('N / f_s [s]')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        plot_symbols(y,'y',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         % Convert to frequency domain using DFT
         r = fft(y);
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,1-1/N,N) ,abs(r), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('module[ r(k) ]')
-        xlabel('w / w_s')
-        subplot(2,1,2)
-        plot( linspace(0,1-1/N,N) ,angle(r)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('angle[ r(k) ] [º]')
-        xlabel('w / w_s')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_FT(r,'r',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         symbs.rx_pe = r; % Store symbols for later
 
@@ -269,18 +188,7 @@ student_id = 19930425;
         H = fft(h, N);
         r_eq = conj(H).*r./abs(H).^2; %TODO: This line is missing some code!
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,1-1/N,N) ,abs(r_eq), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('module[ hat s(k) ]')
-        xlabel('w / w_s')
-        ylim([0,2])
-        subplot(2,1,2)
-        plot( linspace(0,1-1/N,N) ,angle(r_eq)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('angle[ hat s(k) ] [º]')
-        xlabel('w / w_s')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_FT(r_eq,'hat s',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         symbs.rx_e = r_eq; %Store symbols for later
 
@@ -298,19 +206,7 @@ student_id = 19930425;
         % compare two random bit sequences).
         ber = 1-sum(rx == tx)/length(rx);
               
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,1-1/N,N) ,abs(r_eq./x), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('module[ hat s(k) ]')
-        xlabel('w / w_s')
-        ylim([0,2])
-        subplot(2,1,2)
-        plot( linspace(0,1-1/N,N) ,angle(r_eq./x)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('angle[ hat s(k) ] [º]')
-        xlabel('w / w_s')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_FT(r_eq./x,'H',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
     end
 
     function txFrame = concat_packages(txPilot,txData)
@@ -411,36 +307,13 @@ student_id = 19930425;
         
         % Concatenate the messages
         tx_frame = concat_packages(zcp.p,zcp.d); %TODO: This line is missing some code!
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        Ntx = length(tx_frame);
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,Ntx,Ntx) ,real(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('real[ z(n) ]')
-        xlabel('N / f_s [s]')
-        subplot(2,1,2)
-        plot( linspace(0,Ntx,Ntx) ,imag(tx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('im[ z(k) ]')
-        xlabel('N / f_s [s]')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                
+        plot_symbols(tx_frame,'z',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         % Send package over channel
         rx_frame = simulate_baseband_channel(tx_frame, h, snr, sync_err);
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        Nrx = length(rx_frame);
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,Nrx,Nrx) ,real(rx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('real[ y(n) ]')
-        xlabel('N / f_s [s]')
-        subplot(2,1,2)
-        plot( linspace(0,Nrx,Nrx) ,imag(rx_frame), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('im[ y(k) ]')
-        xlabel('N / f_s [s]')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_symbols(rx_frame,'y',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % As before, only keep the first samples
         rx_frame = rx_frame(1:2*(N+N_cp));
@@ -461,48 +334,14 @@ student_id = 19930425;
         % Esimate channel
         H = r.p./x.p; %TODO: This line is missing some code!
         
-        figure('Color','white', 'Position',[277.8000e+000   493.8000e+000   389.6000e+000   220.8000e+000]);
-        subplot(2,1,1);
-        plot(abs(H));  grid on;
-        xlabel('k');
-        ylabel('|H(k)|');
-        title('Estimated Channel response');
-        subplot(2,1,2);
-        plot(angle(H)); grid on;
-        xlabel('k');
-        ylabel('arg(H(k))');
-        set(gca,'LooseInset',get(gca,'TightInset'))
-        saveas(gcf, fullfile(pwd,'images/H-pred-synch'),'epsc')
+        plot_FT(H,'H',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,1-1/N,N) ,abs(r.d), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('module[ r_d(k) ]')
-        xlabel('w / w_s')
-        ylim([0,2])
-        subplot(2,1,2)
-        plot( linspace(0,1-1/N,N) ,angle(r.d)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('angle[ r_d(k) ] [º]')
-        xlabel('w / w_s')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_FT(r.d,'r_d',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         % Remove effect of channel on the data package by equalization.
         r_eq = conj(H).*r.d./abs(H).^2; %TODO: This line is missing some code!
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        figure('Color','white','Position',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000])
-        subplot(2,1,1)
-        plot( linspace(0,1-1/N,N) ,abs(r_eq), 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('module[ hat s(k) ]')
-        xlabel('w / w_s')
-        ylim([0,2])
-        subplot(2,1,2)
-        plot( linspace(0,1-1/N,N) ,angle(r_eq)*180/pi, 'Marker','o','MarkerFaceColor','red', 'MarkerSize', 3); grid on;
-        ylabel('angle[ hat s(k) ] [º]')
-        xlabel('w / w_s')
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        plot_FT(r_eq,'hat s',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         symbs.rx_e = r_eq; %Store symbols for later
 
@@ -518,7 +357,7 @@ student_id = 19930425;
         % Typically this will vary from 0 (no bit errors) to 0.5 (half of all
         % receieved bits are different, which is the number we'd expect if we
         % compare two random bit sequences).
-        ber = 1-sum(rx == tx.d)/length(rx); 
+        ber = 1-sum(rx == tx.d)/length(rx);
     end
 
     function z = frame_interpolate(x,L,hlp)
@@ -552,10 +391,10 @@ student_id = 19930425;
         
         % Upsample by a factor L, i.e. insert L-1 zeros after each original
         % sample
-        zup(1:L:end) = 0; %TODO: This line is missing some code!
+        zup(1:L:end) = x; %TODO: This line is missing some code!
         
         % Apply the LP filter to the upsampled (unfiltered) signal.
-        z = 0; %TODO: This line is missing some code!
+        z = ifft(fft(zup,N*L+Nfir).*fft(hlp,N*L+Nfir)); %TODO: This line is missing some code!
     end
 
     function z = frame_decimate(x,L,hlp)
@@ -580,11 +419,13 @@ student_id = 19930425;
         x = x(:);
         hlp = hlp(:);
         
+        % New Code
+        N = length(x); % This N = Norignal-signal / M (here L is use)
         % Apply the lowpass filter to avoid aliasing when decimating
-        xf = 0; %TODO: This line is missing some code!
+        xf = ifft(fft(x,N+Nfir).*fft(hlp,N+Nfir)); %TODO: This line is missing some code!
         
         % Downsample by keeping samples [1, 1+L, 1+2*L, ...]
-        z = 0; %TODO: This line is missing some code!
+        z = xf(1:L:end); %TODO: This line is missing some code!
     end
 
     function z = frame_modulate(x, theta)
@@ -606,7 +447,7 @@ student_id = 19930425;
        
        % Modulate x by multiplying the samples with the complex exponential
        % exp(i * 2 * pi * theta * n)
-       z = 0; %TODO: This line is missing some code!
+       z = x.*exp(1i * 2 * pi * theta * n); %TODO: This line is missing some code!
     end
 
     function [rx, evm, ber, symbs] = sim_ofdm_audio_channel(tx, N_cp, snr, sync_err, f_s, f_c, L)
@@ -674,8 +515,8 @@ student_id = 19930425;
         tx.p = tx.p(:);
         
         % Convert bits to QPSK symbols
-        x.p = 0; %TODO: This line is missing some code!
-        x.d = 0; %TODO: This line is missing some code!
+        x.p = bits2qpsk(tx.p); %TODO: This line is missing some code!
+        x.d = bits2qpsk(tx.d); %TODO: This line is missing some code!
 
         symbs.tx = x.d;   % Store transmitted data symbols for later
 
@@ -686,59 +527,79 @@ student_id = 19930425;
         end
 
         % Create OFDM time-domain block using IDFT
-        z.p = 0; %TODO: This line is missing some code!
-        z.d = 0; %TODO: This line is missing some code!
+        z.p = ifft(x.p); %TODO: This line is missing some code!
+        z.d = ifft(x.d); %TODO: This line is missing some code!
 
         % Add cyclic prefix to create OFDM package
-        zcp.p = 0; %TODO: This line is missing some code!
-        zcp.d = 0; %TODO: This line is missing some code!
+        zcp.p = add_cyclic_prefix(z.p,N_cp); %TODO: This line is missing some code!
+        zcp.d = add_cyclic_prefix(z.d,N_cp); %TODO: This line is missing some code!
         
         % Concatenate the messages
-        tx_frame = 0; %TODO: This line is missing some code!
+        tx_frame = concat_packages(zcp.p,zcp.d); %TODO: This line is missing some code!
+
+        plot_FT_fs(fft(tx_frame),'s', f_s/L, 'zcp_f', [105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Increase the sample rate by interpolation
-        tx_frame_us = 0; %TODO: This line is missing some code!
+        tx_frame_us = frame_interpolate(tx_frame,L); %TODO: This line is missing some code!
+        
+        plot_FT_fs(fft(tx_frame_us),'s_{us}',f_s, 'zcp_f_interpolate',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Modulate the upsampled signal
-        tx_frame_mod = 0; %TODO: This line is missing some code!
+        tx_frame_mod = frame_modulate(tx_frame_us,f_c/f_s); %TODO: This line is missing some code!
+
+        plot_FT_fs(fft(tx_frame_mod),'s_{mod}',f_s, 'zcp_f_modulate',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Discard the imaginary part of the signal for transmission over a
         % scalar channel (simulation of audio over air)
         tx_frame_final = real(tx_frame_mod);
+        
+        plot_FT_fs(fft(tx_frame_final),'RE(s_{mod})',f_s, 're_s_mod',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         % Send package over channel
         [rx_frame_raw, rx_idx] = simulate_audio_channel(tx_frame_final, f_s, snr, sync_err);
-        
+
         % Discard data before/after package
         rx_frame_raw = rx_frame_raw(rx_idx:rx_idx + length(tx_frame_final));
         
+        plot_FT_fs(fft(rx_frame_raw),'r_x',f_s, 'r_x',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
+        
         % Demodulate to bring the signal back to the baseband
-        rx_frame_us = 0; %TODO: This line is missing some code!
+        rx_frame_us = frame_modulate(rx_frame_raw, -f_c/f_s); %TODO: This line is missing some code!
+        
+        plot_FT_fs(fft(rx_frame_us),'rx_demodulate',f_s/L, 'r_x_demodulate',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
         
         % Decimate the signal to bring the sample rate back to the original
         rx_frame = frame_decimate(rx_frame_us, L);
         
+        plot_FT_fs(fft(rx_frame),'r_decimate',f_s/L, 'r_decimate',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
+        
         % Discard samples beyond OFDM frame
         rx_frame = rx_frame(1:2*(N+N_cp));
-        
+
         % Split frame into packages
         ycp = struct();
-        [ycp.p, ycp.d] = 0; %TODO: This line is missing some code!
+        [ycp.p, ycp.d] = split_frame(rx_frame); %TODO: This line is missing some code!
         
         % Remove cyclic prefix
-        y.p = 0; %TODO: This line is missing some code!
-        y.d = 0; %TODO: This line is missing some code!
+        y.p = remove_cyclic_prefix(ycp.p,N_cp); %TODO: This line is missing some code!
+        y.d = remove_cyclic_prefix(ycp.d,N_cp); %TODO: This line is missing some code!
 
         % Convert to frequency domain using DFT
-        r.p = 0; %TODO: This line is missing some code!
-        r.d = 0; %TODO: This line is missing some code!
+        r.p = fft(y.p); %TODO: This line is missing some code!
+        r.d = fft(y.d); %TODO: This line is missing some code!
         symbs.rx_pe = r.d; % Store symbols for later
         
         % Esimate channel
-        H = 0; %TODO: This line is missing some code!
+        H = r.p./x.p; %TODO: This line is missing some code!
+        
+        plot_FT(H,'H',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
+        
+        plot_FT(r.d,'r_d',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         % Remove effect of channel on the data package by equalization.
-        r_eq = 0; %TODO: This line is missing some code!
+        r_eq = conj(H).*r.d./abs(H).^2; %TODO: This line is missing some code!
+        
+        plot_FT(r_eq,'hat s',[105.8000e+000   173.8000e+000     1.0888e+003   312.8000e+000]);
 
         symbs.rx_e = r_eq; %Store symbols for later
 
@@ -747,7 +608,7 @@ student_id = 19930425;
         evm = norm(x.d - r_eq)/sqrt(N);
 
         % Convert the recieved symsbols to bits
-        rx = 0; %TODO: This line is missing some code!
+        rx = qpsk2bits(r_eq); %TODO: This line is missing some code!
 
         % Calculate the bit error rate (BER).
         % This indicates the relative number of bit errors.
@@ -781,24 +642,3 @@ funs.sim_ofdm_audio_channel = @sim_ofdm_audio_channel;
 % some_output = funs.some_function(some_input);
 
 end
-
-
-
-% IDFT
-%         z = zeros(N,1);
-%         for n=1:N
-%             z(n) = 0;
-%             for ik=1:N
-%                 z(n) = z(n) + 1/N * x(ik)*exp(1i*2*pi*(ik-1)*(n-1)/N) ;
-%             end
-%         end
-
-%
-% FFT
-%         r = zeros(N,1);
-%         for ik=1:N
-%             r(ik) = 0;
-%             for n=1:N
-%                 r(ik) = r(ik) + y(n)*exp(-1i*2*pi*(ik-1)*(n-1)/N) ;
-%             end
-%         end

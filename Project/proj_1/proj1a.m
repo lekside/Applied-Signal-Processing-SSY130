@@ -1,5 +1,3 @@
-close all;
-if ~ exist(fullfile(pwd,'images'),'dir'), mkdir images; end
 %NO_PFILE
 % Sim OFDM_1A
 % Evaluate the performance of the OFDM communication scheme, part A.
@@ -47,6 +45,8 @@ if ~ exist(fullfile(pwd,'images'),'dir'), mkdir images; end
 % posed tasks =)
 
 % Do some cleanup
+if ~ exist(fullfile(pwd,'images'),'dir'), mkdir images; end
+close all;
 clc
 clear variables
 format short eng
