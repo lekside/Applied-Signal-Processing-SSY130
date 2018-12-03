@@ -71,7 +71,7 @@ funs = student_sols();
 
 N = 272;         % Number of OFDM (QPSK) symbols to transmit.   
 N_cp = 60;       % Length of cyclic prefix
-snr = inf;       % Receiver side SNR [dB]
+snr = 10;       % Receiver side SNR [dB]
 sync_err = 0;    % Negative values imply early frame sync
 f_s = 16e3;      % Sample rate of upsampled system [Hz]
 f_c = 4e3;       % Modulation frequency [Hz]
@@ -123,6 +123,9 @@ else
     figure('Color','white');
     plot_constallation(symbs.tx, symbs.rx_e);
     title('Post-equalization symbol constellation');
+    if ~ exist(fullfile(pwd,'images'),'dir'), mkdir images; end
+    set(gca,'LooseInset',get(gca,'TightInset'))
+    saveas(gcf, fullfile(pwd,'images/post-eq-const'),'epsc')
 
     % Draw a plot of the channel's impulse response
     [~, ~, h] = simulate_audio_channel(0, f_s, inf, 0);

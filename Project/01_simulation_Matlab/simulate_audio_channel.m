@@ -54,10 +54,9 @@ ch_b = [50, 6000]*2/(f_s);
 % Generate channel impulse response
 h = impz(b, a);
 % freqz(h)
-h = 1; % For question 2 (project 1b)
 
 % y = filter(b,a,y);
-% y = conv(h,y);
+y = conv(h,y);
 
 % Apply sync error
 if sync_err < 0
