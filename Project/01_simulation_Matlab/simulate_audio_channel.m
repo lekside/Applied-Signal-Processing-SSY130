@@ -55,8 +55,8 @@ ch_b = [50, 6000]*2/(f_s);
 h = impz(b, a);
 % freqz(h)
 
-% y = filter(b,a,y);
-y = conv(h,y);
+% y = filter(b,a,y);    % Old
+% y = conv(h,y);        % Uncomment to simulate real channel
 
 % Apply sync error
 if sync_err < 0

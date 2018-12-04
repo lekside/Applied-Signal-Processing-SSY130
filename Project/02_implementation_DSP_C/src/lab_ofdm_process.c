@@ -230,9 +230,9 @@ void ofdm_demodulate(float * pSrc, float * pRe, float * pIm,  float f, int lengt
 	*/
 
 	#ifdef MASTER_MODE
-#include "../../secret_sauce.h"
-	DO_OFDM_DEMODULATE();
-#else
+	#include "../../secret_sauce.h"
+		DO_OFDM_DEMODULATE();
+	#else
 	/* TODO: Add code from here... */
 	float w =0,inc=f*M_PI*2;
 	for (int i=0; i<= length-1; i++){
@@ -241,9 +241,7 @@ void ofdm_demodulate(float * pSrc, float * pRe, float * pIm,  float f, int lengt
 		w=w-inc;
 	}
 	/* ...to here */
-
-
-#endif
+	#endif
 }
 
 void cnvt_re_im_2_cmplx( float * pRe, float * pIm, float * pCmplx, int length ){
