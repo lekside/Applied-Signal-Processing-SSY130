@@ -44,6 +44,7 @@
 
 % Do some cleanup
 clc
+close all
 clear variables
 format short eng
 
@@ -59,20 +60,23 @@ h = funs.gen_filter();
 % Here are some sample plots to illustrate the behavior of your filter.
 % Feel free to modify, re-use, or completely remove the following lines.
 
-% Plot the filter coefficiencts and magnitude/phase response
-figure(1);
-stem(h);
-title('Filter coefficients');
 
-figure(2);
-N_fft = 1e3;    %Zero-pad FFT for increased frequency resolution
-plot(abs(fft(h, N_fft)));
-title('Filter magnitude response');
-xlabel('A frequency unit (which?)');
-ylabel('|H|');
 
-figure(3);
-plot(unwrap(angle(fft(h, N_fft))));
-title('Filter phase response');
-xlabel('A frequency unit (which?)');
-ylabel('arg(H)');
+%% Plot the filter coefficiencts and magnitude/phase response
+
+% figure('Color','white');
+% stem(h);
+% title('Filter coefficients');
+% 
+% figure('Color','white');
+% N_fft = 1e3;    %Zero-pad FFT for increased frequency resolution
+% plot(abs(fft(h, N_fft)));
+% title('Filter magnitude response');
+% xlabel('A frequency unit (which?)');
+% ylabel('|H|');
+% 
+% figure('Color','white');
+% plot(unwrap(angle(fft(h, N_fft))));
+% title('Filter phase response');
+% xlabel('A frequency unit (which?)');
+% ylabel('arg(H)');

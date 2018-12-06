@@ -9,7 +9,7 @@ function [funs, student_id] = student_sols()
 % Should a numeric value of format YYYYMMDD, e.g.
 % student_id = 19900101;
 % This value must be correct in order to generate a valid secret key.
-student_id = 0;
+student_id = 19930425;
 
 
 % ----------------------------------------
@@ -19,12 +19,106 @@ student_id = 0;
 % You are free to use any of the utility functions located in the same
 % directory as this file.
 
+if ~ exist(fullfile(pwd,'images'),'dir'), mkdir images; end
 
-    function h = gen_filter()
-        h = 0; %TODO: This line is missing some code!
-    end
+pos = load('hip2.mat');
 
-funs.gen_filter = @gen_filter;
+dt = 1;         % s
+f_s   = 1/dt;   % Hz
+
+fcut  = 0.05;   % Hz
+fstop = 0.1;    % Hz
+N = 60;
+
+H_f = [0, fcut, fstop, f_s/2] /(f_s/2);         % *pi [rad/sample]
+H_a = [0,    1,     0,     0] .*H_f*pi *f_s;    % filter amplitude
+h_diff = firpm(N,H_f,H_a,'differentiator');
+
+figure('Color','white','Position',[381.0000e+000   455.4000e+000   664.0000e+000   212.8000e+000])
+stem(h_diff)
+xlabel 'Samples',  ylabel 'Amplitude', grid on
+xlim([0 N])
+set(gca,'LooseInset',get(gca,'TightInset'))
+saveas(gcf, fullfile(pwd,'images/','h_imp_resp'),'epsc')
+
+[H,w] = freqz(h_diff,1,512);
+figure('Color','white','Position',[381.0000e+000   455.4000e+000   664.0000e+000   212.8000e+000])
+plot(H_f,H_a, w/pi,abs(H),'LineWidth',1.5);
+legend('Ideal','firpm Design')
+xlabel 'Normalized Frequency (\times\pi [rad/sample])', ylabel 'Magnitude', grid on
+set(gca,'LooseInset',get(gca,'TightInset'))
+saveas(gcf, fullfile(pwd,'images/','H_abs'),'epsc')
+
+% N_fft = 2e3;    %Zero-pad FFT for increased frequency resolution
+% f_fft = (0:N_fft-1)/N_fft*f_s;
+% H = fft(h_diff,N_fft);
+% 
+% figure('Color','white');
+% subplot(2,1,1)
+% plot(f_fft , abs(H), '--'); grid on; hold on;
+% plot(H_f*(f_s/2), abs(H_a))
+% title('Filter magnitude response');
+% xlabel('f [Hz]');
+% ylabel('|H|');
+% subplot(2,1,2)
+% plot(f_fft ,unwrap(angle(H))); grid on;
+% title('Filter phase response');
+% xlabel('f [Hz]');
+% ylabel('arg(H)');
+
+
+
+Nsamples = length(pos.observation);
+
+h_euler = [1/dt , -1/dt];
+vel.observation = conv(pos.observation, h_euler) *3600;
+vel.observation = vel.observation(1:Nsamples) ;
+vel.signal = conv(pos.signal, h_euler) *3600;
+vel.signal = vel.signal(1:Nsamples);
+t_euler = (0:Nsamples-1)/dt;
+
+vel.filtered = conv(pos.observation, h_diff) *3600;
+t_filtered   = (0:length(vel.filtered)-1)/dt;
+
+figure('Color','white','Position',[464.2000e+000   373.8000e+000   404.0000e+000   290.4000e+000]);
+xlabel 'time [s]', ylabel 'velocity [km/h]', hold on, grid on
+axis([0 600 0 220])
+plot(t_euler,vel.signal,'LineWidth',2);
+plot(t_filtered,vel.filtered,'LineWidth',2);
+legend({'true','filtered'});
+set(gca,'LooseInset',get(gca,'TightInset'))
+saveas(gcf, fullfile(pwd,'images/','vel-delayed'),'epsc')
+
+figure('Color','white','Position',[464.2000e+000   373.8000e+000   404.0000e+000   290.4000e+000]);
+xlabel 'time [s]', ylabel 'velocity [km/h]', hold on, grid on
+axis([0 600 0 220])
+plot(t_euler,vel.signal,'LineWidth',2);
+plot(t_filtered(N/2:end)-N/2,vel.filtered(N/2:end),'LineWidth',2);
+legend({'true','filtered'});
+set(gca,'LooseInset',get(gca,'TightInset'))
+saveas(gcf, fullfile(pwd,'images/','vel-delay-corr'),'epsc')
+
+lc = lines(2);
+figure('Color','white','Position',[464.2000e+000   373.8000e+000   404.0000e+000   290.4000e+000]);
+xlabel 'time [s]', ylabel 'velocity [km/h]', hold on, grid on
+% axis([0 600 0 220])
+plot(t_euler,vel.observation,'--','Color',lc(2,:),'LineWidth',1);
+plot(t_euler,vel.signal,'Color',lc(1,:),'LineWidth',2);
+legend({'Euler','true'});
+set(gca,'LooseInset',get(gca,'TightInset'))
+saveas(gcf, fullfile(pwd,'images/','vel-noise'),'epsc')
+
+figure
+plot(pos.observation)
+
+funs.gen_filter = @() h_diff;
+
+%      function h = gen_filter()
+%         h = 0;
+%     end
+% 
+% funs.gen_filter = @gen_filter;
+
 
 
 % This file will return a structure with handles to the functions you have
