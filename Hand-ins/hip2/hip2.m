@@ -49,7 +49,7 @@ clear variables
 format short eng
 
 % Perform all self-tests of functions in student_sol.m
-apply_tests();
+% % % % % % apply_tests();
 
 % Load student-written functions
 funs = student_sols();

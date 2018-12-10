@@ -102,9 +102,9 @@ pilot = string2bits(pilot_str);
 % h = zeros(60,1); h(1) = 1;   % Ideal
 % h = zeros(60,1); h(1) = 0.5; % Ideal, scaled magnitude
 % h = zeros(60,1); h(1) = exp(1j*1/2);    % Ideal, phase shift by 1/2 radian (~28 degrees)
-% h = 0.8.^(0:59)';            % LP model
+h = 0.8.^(0:59)';            % LP model
 % h = 0.99.^(0:59)';            % LP model
-h = zeros(60,1); h(1) = 0.5; h(9) = 0.5; % Multipath (2 paths)
+% h = zeros(60,1); h(1) = 0.5; h(9) = 0.5; % Multipath (2 paths)
 % h = randn(60,1);             % Random Gaussian 
 
 % Plot the channel response

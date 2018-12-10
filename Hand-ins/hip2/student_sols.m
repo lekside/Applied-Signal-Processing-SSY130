@@ -77,15 +77,17 @@ vel.signal = conv(pos.signal, h_euler) *3600;
 vel.signal = vel.signal(1:Nsamples);
 t_euler = (0:Nsamples-1)/dt;
 
-vel.filtered = conv(pos.observation, h_diff) *3600;
-t_filtered   = (0:length(vel.filtered)-1)/dt;
+vel.fir_obs = conv(pos.observation, h_diff) *3600;
+vel.fir_sig = conv(pos.signal, h_diff) *3600;
+t_filtered   = (0:length(vel.fir_obs)-1)/dt;
 
 figure('Color','white','Position',[464.2000e+000   373.8000e+000   404.0000e+000   290.4000e+000]);
 xlabel 'time [s]', ylabel 'velocity [km/h]', hold on, grid on
 axis([0 600 0 220])
 plot(t_euler,vel.signal,'LineWidth',2);
-plot(t_filtered,vel.filtered,'LineWidth',2);
-legend({'true','filtered'});
+plot(t_filtered,vel.fir_obs,'LineWidth',2);
+plot(t_filtered,vel.fir_sig,'LineWidth',2);
+legend({'FIR - true','FIR - measured', 'Euler - true'});
 set(gca,'LooseInset',get(gca,'TightInset'))
 saveas(gcf, fullfile(pwd,'images/','vel-delayed'),'epsc')
 
@@ -93,7 +95,8 @@ figure('Color','white','Position',[464.2000e+000   373.8000e+000   404.0000e+000
 xlabel 'time [s]', ylabel 'velocity [km/h]', hold on, grid on
 axis([0 600 0 220])
 plot(t_euler,vel.signal,'LineWidth',2);
-plot(t_filtered(N/2:end)-N/2,vel.filtered(N/2:end),'LineWidth',2);
+plot(t_filtered(N/2:end)-N/2,vel.fir_obs(N/2:end),'LineWidth',2);
+plot(t_filtered,vel.fir_sig,'LineWidth',2);
 legend({'true','filtered'});
 set(gca,'LooseInset',get(gca,'TightInset'))
 saveas(gcf, fullfile(pwd,'images/','vel-delay-corr'),'epsc')
@@ -108,8 +111,8 @@ legend({'Euler','true'});
 set(gca,'LooseInset',get(gca,'TightInset'))
 saveas(gcf, fullfile(pwd,'images/','vel-noise'),'epsc')
 
-figure
-plot(pos.observation)
+% figure
+% plot(pos.observation)
 
 funs.gen_filter = @() h_diff;
 
