@@ -88,7 +88,7 @@
  * Should match one of the #ifdef lines in src/blocks/waveforms/mp3_data.h
  * For example, one line is #ifdef MP3_DATA_MUSIC, so MP3_DATA_MUSIC is
  * acceptable  */
-#define MP3_DATA_FLY
+#define MP3_DATA_CRAZY
 #endif
 
 /** @brief Define this directive to include the assignment solutions. The

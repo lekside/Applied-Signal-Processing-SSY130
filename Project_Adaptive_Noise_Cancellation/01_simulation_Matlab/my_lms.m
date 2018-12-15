@@ -23,7 +23,7 @@ function [xhat, e, lms_coeffs, lms_coeffs_history] = my_lms(lms_state, lms_coeff
 	e = zeros(block_size,1);
 	xhat = zeros(block_size,1);
 	
-	%Do block_size LMS iterations
+	Do block_size LMS iterations
 	for k=1:block_size
 		%Generate indices of lms_state that corresponds to y(k)
 		%i.e. for the current iteration, what was the vector y?

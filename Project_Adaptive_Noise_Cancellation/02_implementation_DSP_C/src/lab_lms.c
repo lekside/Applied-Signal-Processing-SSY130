@@ -412,22 +412,22 @@ void my_lms(float * y, float * x, float * xhat, float * e, int block_size,
 	 * ...to here */
 	int k, i, j;
 	j = 0;
-	for(k=block_size-1; k>=0; k--){ 		   //Which order should we loop n over? [0, 1, 2, ..., block_size]? [block_size, ..., 1, 0]?
+	for(k=0; k < block_size; k++){//block_size-1; k>=0; k--){ 		   //Which order should we loop n over? [0, 1, 2, ..., block_size]? [block_size, ..., 1, 0]?
 	 	float * y = &lms_state[k]; 		   //See documentation above for how to extract the relevant section from the long vector lms_state to create "y"
+		
 		arm_dot_prod_f32(lms_coeffs, y, lms_taps, xhat+k );		//xhat[n] = lms_coeffs * y;
 		e[k] = x[k] - xhat[k];
 		for (i=0; i<lms_taps; i++) {
 			lms_coeffs[i] += 2 * lms_mu * y[i] * e[k];      //Use some type of loop to update the vector lms_coeffs with the vector y multiplied by scalars 2, mu, e[n].
 		}
+		// if (k>block_size-1-10 || k< 10){
+		// 	printf("Iteration %d\n",k);
 
-		if (k>block_size-1-10 || k< 10){
-			printf("Iteration %d\n",k);
-
-			printf("y = %f %f %f *** \n", *y,*(y+1),*(y+2));
-			printf("h = %f %f %f *** \n",lms_coeffs[0],lms_coeffs[1],lms_coeffs[2]);
-			printf("x-xhat: %f  -  %f\n",x[k],xhat[k]);
-			printf("value of e[k]: %f\n\n",e[k]);
-		}
+		// 	printf("y = %f %f %f *** \n", *y,*(y+1),*(y+2));
+		// 	printf("h = %f %f %f *** \n",lms_coeffs[0],lms_coeffs[1],lms_coeffs[2]);
+		// 	printf("x-xhat: %f  -  %f\n",x[k],xhat[k]);
+		// 	printf("value of e[k]: %f\n\n",e[k]);
+		// }
 	}
 #endif
 
