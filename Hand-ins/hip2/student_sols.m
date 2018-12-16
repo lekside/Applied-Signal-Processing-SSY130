@@ -49,10 +49,10 @@ xlabel 'Normalized Frequency (\times\pi [rad/sample])', ylabel 'Magnitude', grid
 set(gca,'LooseInset',get(gca,'TightInset'))
 saveas(gcf, fullfile(pwd,'images/','H_abs'),'epsc')
 
+% Plot using FFT instead of freqz
 % N_fft = 2e3;    %Zero-pad FFT for increased frequency resolution
 % f_fft = (0:N_fft-1)/N_fft*f_s;
-% H = fft(h_diff,N_fft);
-% 
+% H = fft(h_diff,N_fft); 
 % figure('Color','white');
 % subplot(2,1,1)
 % plot(f_fft , abs(H), '--'); grid on; hold on;

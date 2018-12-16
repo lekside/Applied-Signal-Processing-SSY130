@@ -9,7 +9,7 @@ function [funs, student_id] = student_sols()
 % Should a numeric value of format YYYYMMDD, e.g.
 % student_id = 19900101;
 % This value must be correct in order to generate a valid secret key.
-student_id = 19930425;
+student_id = 0;
 
 
 % ----------------------------------------
@@ -58,16 +58,17 @@ student_id = 19930425;
         % Kalman filter iterations:
         for t=1:N
             % Filter update based on measurement
-            Xfilt(:,t) = Xpred(:,t) + P*C'* ((C*P*C' + R)\(Y(:,t) - C*Xpred(:,t)));
+            % Xfilt(:,t) = Xpred(:,t) + ...
+            Xfilt(:,t) = Xpred(:,t) + ; %TODO: This line is missing some code!
             
             % Uncertainty update, from (17)
-            Pplus = P - P*C'* ((C*P*C' + R)\C*P);
+            Pplus = P - P*C'*(C*P*C' + R)\C*P; %TODO: This line is missing some code!
             
             % Prediction, from (19)
-            Xpred(:,t+1) = A * Xfilt(:,t);
+            Xpred(:,t+1) = A * Xfilt(:,t); %TODO: This line is missing some code!
             
             % From (20)
-            P = A*Pplus*A' + Q;
+            P = A*Pplus*A' + Q; %TODO: This line is missing some code!
         end
     end
 
