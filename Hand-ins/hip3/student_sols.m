@@ -58,10 +58,10 @@ student_id = 19930425;
         % Kalman filter iterations:
         for t=1:N
             % Filter update based on measurement
-            Xfilt(:,t) = Xpred(:,t) + P*C'* ((C*P*C' + R)\(Y(:,t) - C*Xpred(:,t)));
+            Xfilt(:,t) = Xpred(:,t) + P*C'*inv(C*P*C' + R)*(Y(:,t) - C*Xpred(:,t));
             
             % Uncertainty update, from (17)
-            Pplus = P - P*C'* ((C*P*C' + R)\C*P);
+            Pplus = P - P*C'*inv(C*P*C' + R)*C*P;
             
             % Prediction, from (19)
             Xpred(:,t+1) = A * Xfilt(:,t);
